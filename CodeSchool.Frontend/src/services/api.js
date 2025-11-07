@@ -1,0 +1,72 @@
+import axios from 'axios'
+
+// Configuração base da API
+const api = axios.create({
+  baseURL: 'http://localhost:5299/api',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+
+// Interceptor para adicionar token em todas as requisições
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Serviço de Autenticação
+export const authService = {
+  async registrar(dados) {
+    const response = await api.post('/Auth/registro', dados)
+    return response.data
+  },
+
+  async login(email, senha) {
+    const response = await api.post('/Auth/login', { email, senha })
+    return response.data
+  },
+
+  logout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('usuario')
+  }
+}
+
+// Serviço de Desafios
+export const desafiosService = {
+  async listarDesafios() {
+    const response = await api.get('/Desafios')
+    return response.data
+  },
+
+  async obterDesafio(id) {
+    const response = await api.get(`/Desafios/${id}`)
+    return response.data
+  }
+}
+
+// Serviço de Progresso
+export const progressoService = {
+  async submeterDesafio(desafioId, codigoSolucao) {
+    const response = await api.post('/Progresso/submeter', {
+      desafioId,
+      codigoSolucao
+    })
+    return response.data
+  },
+
+  async obterDashboard() {
+    const response = await api.get('/Progresso/dashboard')
+    return response.data
+  }
+}
+
+export default api

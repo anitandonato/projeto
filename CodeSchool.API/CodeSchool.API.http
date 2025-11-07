@@ -1,0 +1,6 @@
+@CodeSchool.API_HostAddress = http://localhost:5299
+
+GET {{CodeSchool.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
