@@ -68,5 +68,36 @@ export const progressoService = {
     return response.data
   }
 }
+// Serviço de Turmas
+export const turmaService = {
+  // Professor: criar turma
+  async criarTurma(nome) {
+    const response = await api.post('/Turma/criar', { nome })
+    return response.data
+  },
 
+  // Professor: listar minhas turmas
+  async minhasTurmas() {
+    const response = await api.get('/Turma/minhas-turmas')
+    return response.data
+  },
+
+  // Professor: ver alunos da turma
+  async obterAlunosDaTurma(turmaId) {
+    const response = await api.get(`/Turma/${turmaId}/alunos`)
+    return response.data
+  },
+
+  // Aluno: entrar na turma
+  async entrarNaTurma(codigo) {
+    const response = await api.post('/Turma/entrar', { codigo })
+    return response.data
+  },
+
+  // Aluno: minhas turmas
+  async minhasTurmasAluno() {
+    const response = await api.get('/Turma/minhas-turmas-aluno')
+    return response.data
+  }
+}
 export default api

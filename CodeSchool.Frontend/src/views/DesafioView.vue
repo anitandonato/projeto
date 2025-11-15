@@ -1,11 +1,13 @@
 <template>
   <div class="desafio">
+    <AccessibilityMenu />
+     <a href="#conteudo-principal" @click.prevent="pularParaConteudo" class="skip-link"> Pular para conteúdo principal</a>
     <header class="header">
       <button @click="voltar" class="btn-voltar">← Voltar</button>
       <h1 v-if="desafio">{{ desafio.titulo }}</h1>
     </header>
 
-    <main class="content" v-if="desafio">
+    <main id="conteudo-principal" class="content" v-if="desafio">
       <div class="instrucoes">
         <h2>📝 Objetivo:</h2>
         <p>{{ desafio.descricao }}</p>
@@ -79,10 +81,17 @@
 </template>
 
 <script setup>
+import { registrarBlocosCustomizados } from '../services/blocosCustomizados'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { desafiosService, progressoService } from '../services/api'
 import * as Blockly from 'blockly'
+import { javascriptGenerator } from 'blockly/javascript'  
+import AccessibilityMenu from '../components/AccessibilityMenu.vue'
+import { useAccessibilityStore } from '../stores/accessibility'
+import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
+
+const accessibilityStore = useAccessibilityStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -98,8 +107,16 @@ const grid = ref([])
 const robotX = ref(0)
 const robotY = ref(0)
 const robotDirecao = ref(0) // 0=direita, 1=baixo, 2=esquerda, 3=cima
-
+useKeyboardShortcuts()
 // Inicializar grid
+function pularParaConteudo() {
+  const conteudo = document.getElementById('conteudo-principal')
+  if (conteudo) {
+    conteudo.setAttribute('tabindex', '-1')
+    conteudo.focus()
+    conteudo.scrollIntoView()
+  }
+}
 function inicializarGrid() {
   grid.value = []
   for (let y = 0; y < GRID_SIZE; y++) {
@@ -168,26 +185,62 @@ async function carregarDesafio() {
 }
 
 function inicializarBlockly() {
-  // Blocos customizados simples
+  // Registrar blocos customizados
+  registrarBlocosCustomizados()
+  
+  // Toolbox com blocos customizados
   const toolbox = {
-    kind: 'flyoutToolbox',
+    kind: 'categoryToolbox',
     contents: [
       {
-        kind: 'block',
-        type: 'controls_repeat_ext',
-        inputs: {
-          TIMES: {
-            shadow: {
-              type: 'math_number',
-              fields: { NUM: 3 }
-            }
+        kind: 'category',
+        name: 'Movimento',
+        colour: 160,
+        contents: [
+          {
+            kind: 'block',
+            type: 'mover_frente'
+          },
+          {
+            kind: 'block',
+            type: 'virar_direita'
+          },
+          {
+            kind: 'block',
+            type: 'virar_esquerda'
           }
-        }
+        ]
       },
       {
-        kind: 'block',
-        type: 'math_number',
-        fields: { NUM: 1 }
+        kind: 'category',
+        name: 'Controle',
+        colour: 120,
+        contents: [
+          {
+            kind: 'block',
+            type: 'controls_repeat_ext',
+            inputs: {
+              TIMES: {
+                shadow: {
+                  type: 'math_number',
+                  fields: { NUM: 3 }
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        kind: 'category',
+        name: 'Números',
+        colour: 230,
+        contents: [
+          {
+            kind: 'block',
+            type: 'math_number',
+            fields: { NUM: 1 }
+          }
+        ]
       }
     ]
   }
@@ -217,45 +270,118 @@ async function executar() {
   
   resetarRobo()
   mensagemExecucao.value = 'Executando...'
+  resultado.value = null
   
-  // Gerar código JavaScript do Blockly
-  const code = Blockly.JavaScript.workspaceToCode(workspace.value)
+  // Gerar código JavaScript
+  const code = javascriptGenerator.workspaceToCode(workspace.value)
   
-  // Interpretar comandos simples
-  const movimentos = []
+  if (!code || code.trim() === '') {
+    mensagemExecucao.value = '⚠️ Adicione blocos para executar!'
+    return
+  }
   
-  // Contar blocos de repetição
-  const blocks = workspace.value.getAllBlocks()
-  let totalMovimentos = 0
+  // Criar funções para interpretar
+  const comandos = []
   
-  for (const block of blocks) {
-    if (block.type === 'controls_repeat_ext') {
-      const vezes = block.getFieldValue('TIMES') || 
-                    block.getInputTargetBlock('TIMES')?.getFieldValue('NUM') || 1
-      totalMovimentos += parseInt(vezes)
+  // Parsear código gerado
+  const linhas = code.split('\n').filter(l => l.trim())
+  
+  for (const linha of linhas) {
+    if (linha.includes('mover()')) {
+      comandos.push('mover')
+    } else if (linha.includes('virarDireita()')) {
+      comandos.push('virar_direita')
+    } else if (linha.includes('virarEsquerda()')) {
+      comandos.push('virar_esquerda')
     }
   }
   
-  // Simular movimentos
-  for (let i = 0; i < totalMovimentos; i++) {
+  // Se não tiver comandos, interpretar blocos de repetição
+  if (comandos.length === 0) {
+    const topBlocks = workspace.value.getTopBlocks(true)
+    
+    for (const block of topBlocks) {
+      await interpretarBloco(block, comandos)
+    }
+  }
+  
+  if (comandos.length === 0) {
+    mensagemExecucao.value = '⚠️ Configure os blocos corretamente!'
+    return
+  }
+  
+  // Executar comandos com animação
+  for (const comando of comandos) {
     await sleep(500)
-    moverRobo()
+    
+    if (comando === 'mover') {
+      moverRobo()
+    } else if (comando === 'virar_direita') {
+      virarDireita()
+    } else if (comando === 'virar_esquerda') {
+      virarEsquerda()
+    }
   }
   
   // Verificar se chegou no objetivo
-  const objetivoX = grid.value[0].findIndex((c, x) => 
-    grid.value.some((linha, y) => linha[x] === 'objetivo' && y === robotY.value)
-  )
-  
   const chegouNoObjetivo = grid.value[robotY.value][robotX.value] === 'objetivo'
   
   if (chegouNoObjetivo) {
-    mensagemExecucao.value = '✅ Parabéns! Você completou o desafio! Agora clique em "Enviar Solução".'
+    mensagemExecucao.value = '🎉 Parabéns! Você completou o desafio! Agora clique em "Enviar Solução".'
   } else {
-    mensagemExecucao.value = '❌ Quase lá! Tente ajustar sua solução.'
+    mensagemExecucao.value = '❌ Quase lá! O robô não chegou na bandeira. Tente ajustar sua solução.'
   }
 }
 
+// Interpretar blocos recursivamente
+async function interpretarBloco(block, comandos) {
+  if (!block) return
+  
+  if (block.type === 'mover_frente') {
+    comandos.push('mover')
+  } else if (block.type === 'virar_direita') {
+    comandos.push('virar_direita')
+  } else if (block.type === 'virar_esquerda') {
+    comandos.push('virar_esquerda')
+  } else if (block.type === 'controls_repeat_ext') {
+    const inputBlock = block.getInputTargetBlock('TIMES')
+    const vezes = inputBlock ? parseInt(inputBlock.getFieldValue('NUM') || 1) : 1
+    
+    const doBlock = block.getInputTargetBlock('DO')
+    
+    for (let i = 0; i < vezes; i++) {
+      if (doBlock) {
+        await interpretarBlocoEFilhos(doBlock, comandos)
+      }
+    }
+  }
+  
+  // Processar próximo bloco
+  const nextBlock = block.getNextBlock()
+  if (nextBlock) {
+    await interpretarBloco(nextBlock, comandos)
+  }
+}
+
+// Interpretar bloco e seus filhos
+async function interpretarBlocoEFilhos(block, comandos) {
+  if (!block) return
+  
+  await interpretarBloco(block, comandos)
+  
+  const nextBlock = block.getNextBlock()
+  if (nextBlock) {
+    await interpretarBlocoEFilhos(nextBlock, comandos)
+  }
+}
+
+function virarDireita() {
+  robotDirecao.value = (robotDirecao.value + 1) % 4
+}
+
+function virarEsquerda() {
+  robotDirecao.value = (robotDirecao.value - 1 + 4) % 4
+}
 function moverRobo() {
   // Mover na direção atual
   switch (robotDirecao.value) {

@@ -152,7 +152,11 @@ async function fazerLogin() {
     mensagemTipo.value = 'sucesso'
     
     setTimeout(() => {
-      router.push('/dashboard')
+      if (dados.tipo === 'Professor') {
+        router.push('/professor')
+      } else {
+        router.push('/dashboard')
+      }
     }, 500)
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao fazer login'
@@ -174,7 +178,11 @@ async function fazerCadastro() {
     mensagemTipo.value = 'sucesso'
     
     setTimeout(() => {
-      router.push('/dashboard')
+      if (dados.tipo === 'Professor') {
+        router.push('/professor')
+      } else {
+        router.push('/dashboard')
+      }
     }, 500)
   } catch (error) {
     mensagem.value = error.response?.data?.mensagem || 'Erro ao cadastrar'

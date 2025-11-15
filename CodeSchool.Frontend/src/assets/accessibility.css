@@ -1,0 +1,242 @@
+/* ========================================
+   ACESSIBILIDADE - ESTILOS GLOBAIS
+   ======================================== */
+
+/* ALTO CONTRASTE */
+html.alto-contraste,
+html.alto-contraste body,
+body.alto-contraste {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+}
+
+html.alto-contraste .dashboard,
+html.alto-contraste .professor-dashboard,
+html.alto-contraste .desafio,
+html.alto-contraste .turma-detalhes,
+html.alto-contraste .login-container {
+  background: #000000 !important;
+}
+
+html.alto-contraste .header {
+  background: #000000 !important;
+  border-bottom: 3px solid #FFFFFF !important;
+}
+
+html.alto-contraste .logo {
+  color: #FFD700 !important;
+  font-weight: bold !important;
+}
+
+html.alto-contraste .stat-card,
+html.alto-contraste .badge-card,
+html.alto-contraste .desafio-card,
+html.alto-contraste .turma-card,
+html.alto-contraste .turma-aluno-card,
+html.alto-contraste .codigo-card,
+html.alto-contraste .stats-card,
+html.alto-contraste .modal,
+html.alto-contraste .menu-painel,
+html.alto-contraste .instrucoes,
+html.alto-contraste .visualizacao,
+html.alto-contraste .editor-area,
+html.alto-contraste .vazio,
+html.alto-contraste .minhas-turmas-section {
+  background: #000000 !important;
+  border: 3px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.alto-contraste h1,
+html.alto-contraste h2,
+html.alto-contraste h3,
+html.alto-contraste h4,
+html.alto-contraste h5,
+html.alto-contraste p,
+html.alto-contraste span,
+html.alto-contraste label,
+html.alto-contraste div,
+html.alto-contraste li {
+  color: #FFFFFF !important;
+}
+
+html.alto-contraste .btn-primary,
+html.alto-contraste .btn-jogar,
+html.alto-contraste .btn-executar,
+html.alto-contraste .btn-submeter,
+html.alto-contraste .btn-criar-turma,
+html.alto-contraste .btn-entrar-turma,
+html.alto-contraste .btn-confirmar,
+html.alto-contraste .btn-ver {
+  background: #FFD700 !important;
+  color: #000000 !important;
+  border: 3px solid #FFFFFF !important;
+  font-weight: bold !important;
+}
+
+html.alto-contraste .btn-primary:hover,
+html.alto-contraste .btn-jogar:hover,
+html.alto-contraste .btn-executar:hover,
+html.alto-contraste .btn-submeter:hover,
+html.alto-contraste .btn-criar-turma:hover,
+html.alto-contraste .btn-entrar-turma:hover,
+html.alto-contraste .btn-confirmar:hover,
+html.alto-contraste .btn-ver:hover {
+  background: #00FFFF !important;
+  color: #000000 !important;
+}
+
+html.alto-contraste input,
+html.alto-contraste select,
+html.alto-contraste textarea {
+  background: #000000 !important;
+  color: #FFFFFF !important;
+  border: 3px solid #FFFFFF !important;
+}
+
+html.alto-contraste input:focus,
+html.alto-contraste select:focus,
+html.alto-contraste textarea:focus {
+  border-color: #FFD700 !important;
+  outline: 3px solid #FFD700 !important;
+}
+
+html.alto-contraste .grid-celula {
+  background: #000000 !important;
+  border: 2px solid #FFFFFF !important;
+}
+
+html.alto-contraste .grid-celula.com-robo {
+  background: #0000FF !important;
+}
+
+html.alto-contraste .grid-celula.objetivo {
+  background: #FFD700 !important;
+}
+
+html.alto-contraste .stat-value,
+html.alto-contraste .pontos {
+  color: #FFD700 !important;
+}
+
+/* TAMANHOS DE FONTE */
+html.fonte-pequena {
+  font-size: 14px !important;
+}
+
+html.fonte-normal {
+  font-size: 16px !important;
+}
+
+html.fonte-grande {
+  font-size: 20px !important;
+}
+
+html.fonte-grande h1 {
+  font-size: 2.5rem !important;
+}
+
+html.fonte-grande h2 {
+  font-size: 2rem !important;
+}
+
+html.fonte-grande h3 {
+  font-size: 1.5rem !important;
+}
+
+html.fonte-grande button {
+  font-size: 1.2rem !important;
+  padding: 18px 24px !important;
+}
+
+/* REDUÇÃO DE MOVIMENTO */
+html.reducao-movimento * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* FOCO VISÍVEL */
+*:focus {
+  outline: 3px solid #667eea !important;
+  outline-offset: 2px !important;
+}
+
+html.alto-contraste *:focus {
+  outline: 3px solid #FFD700 !important;
+  outline-offset: 3px !important;
+}
+
+/* SKIP LINKS */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #667eea;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 10000;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+html.alto-contraste .skip-link {
+  background: #FFD700 !important;
+  color: #000000 !important;
+}
+
+/* MELHORIAS DE LEGIBILIDADE */
+html.alto-contraste p,
+html.alto-contraste li {
+  line-height: 1.8 !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* TABELAS ACESSÍVEIS */
+html.alto-contraste table {
+  border: 3px solid #FFFFFF !important;
+}
+
+html.alto-contraste th,
+html.alto-contraste td {
+  border: 2px solid #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+html.alto-contraste thead {
+  background: #333333 !important;
+}
+
+html.alto-contraste tbody tr:hover {
+  background: #1a1a1a !important;
+}
+/* Efeito de foco no conteúdo principal */
+#conteudo-principal:focus {
+  outline: 5px solid #FFD700 !important;
+  outline-offset: -5px !important;
+  animation: pulse-focus 0.5s ease-in-out;
+}
+
+@keyframes pulse-focus {
+  0% {
+    outline-color: #FFD700;
+    outline-width: 5px;
+  }
+  50% {
+    outline-color: #FF6B6B;
+    outline-width: 8px;
+  }
+  100% {
+    outline-color: #FFD700;
+    outline-width: 5px;
+  }
+}
+
+html.alto-contraste #conteudo-principal:focus {
+  outline: 8px solid #FFD700 !important;
+  background: rgba(255, 215, 0, 0.1) !important;
+}
+

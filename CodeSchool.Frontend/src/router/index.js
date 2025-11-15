@@ -19,19 +19,50 @@ const router = createRouter({
       name: 'desafio',
       component: () => import('../views/DesafioView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/professor',
+      name: 'professor-dashboard',
+      component: () => import('../views/ProfessorDashboardView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/professor/turma/:id',
+      name: 'turma-detalhes',
+      component: () => import('../views/TurmaDetalhesView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
 
-// Guard de autenticação
+// Guard de autenticação MELHORADO
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
+  const isAuthenticated = !!token
   
-  if (to.meta.requiresAuth && !token) {
-    next('/')
-  } else if (to.name === 'login' && token) {
-    next('/dashboard')
-  } else {
+  // Se a rota requer autenticação
+  if (to.meta.requiresAuth) {
+    if (!isAuthenticated) {
+      // Não autenticado, redirecionar para login
+      console.log('Não autenticado, redirecionando para login')
+      next('/')
+    } else {
+      // Autenticado, permitir acesso
+      next()
+    }
+  } 
+  // Se está tentando acessar login mas já está autenticado
+  else if (to.name === 'login' && isAuthenticated) {
+    // Redirecionar para dashboard apropriado
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
+    if (usuario.tipo === 'Professor') {
+      next('/professor')
+    } else {
+      next('/dashboard')
+    }
+  } 
+  // Rota pública, permitir acesso
+  else {
     next()
   }
 })
