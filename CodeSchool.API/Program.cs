@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CodeSchool.API.Data;
+using CodeSchool.API.Models;
 using CodeSchool.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,11 +42,8 @@ builder.Services.AddSwaggerGen(options =>
 // Banco de dados SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=codeschool.db"));
-
-// Serviços customizados
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<GameService>();
-
+    builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<GameService>();
 // Configurar CORS (permitir frontend acessar API)
 builder.Services.AddCors(options =>
 {
@@ -76,11 +74,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-// Criar banco de dados automaticamente
+// ========== CRIAR BANCO AUTOMATICAMENTE ==========
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+    
+    // Criar apenas usuários (desafios já vêm do seed)
+    CriarUsuariosIniciais(context);
 }
 
 // Configurar pipeline HTTP
@@ -96,3 +97,33 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+// ========== FUNÇÕES DE SEED ==========
+
+void CriarUsuariosIniciais(AppDbContext context)
+{
+    if (context.Usuarios.Any()) return;
+
+    var usuarios = new List<Usuario>
+    {
+        new Usuario
+        {
+            Nome = "Maria Santos",
+            Email = "maria@aluno.com",
+            SenhaHash = BCrypt.Net.BCrypt.HashPassword("senha123"),
+            Tipo = TipoUsuario.Aluno,
+            AvatarId = 1
+        },
+        new Usuario
+        {
+            Nome = "Prof. Ana Silva",
+            Email = "ana@professor.com",
+            SenhaHash = BCrypt.Net.BCrypt.HashPassword("senha123"),
+            Tipo = TipoUsuario.Professor,
+            AvatarId = 2
+        }
+    };
+
+    context.Usuarios.AddRange(usuarios);
+    context.SaveChanges();
+    Console.WriteLine("✅ Usuários criados com sucesso!");
+}

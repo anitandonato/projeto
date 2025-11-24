@@ -1,7 +1,8 @@
 <template>
   <div class="desafio">
     <AccessibilityMenu />
-     <a href="#conteudo-principal" @click.prevent="pularParaConteudo" class="skip-link"> Pular para conteúdo principal</a>
+    <a href="#conteudo-principal" @click.prevent="pularParaConteudo" class="skip-link"> Pular para conteúdo
+      principal</a>
     <header class="header">
       <button @click="voltar" class="btn-voltar">← Voltar</button>
       <h1 v-if="desafio">{{ desafio.titulo }}</h1>
@@ -19,20 +20,11 @@
         <div class="visualizacao">
           <h3>🎮 Visualização</h3>
           <div class="grid-container">
-            <div 
-              v-for="(linha, y) in grid" 
-              :key="y" 
-              class="grid-linha"
-            >
-              <div 
-                v-for="(celula, x) in linha" 
-                :key="x" 
-                class="grid-celula"
-                :class="{ 
-                  'com-robo': robotX === x && robotY === y,
-                  'objetivo': celula === 'objetivo'
-                }"
-              >
+            <div v-for="(linha, y) in grid" :key="y" class="grid-linha">
+              <div v-for="(celula, x) in linha" :key="x" class="grid-celula" :class="{
+                'com-robo': robotX === x && robotY === y,
+                'objetivo': celula === 'objetivo'
+              }">
                 <div v-if="robotX === x && robotY === y" class="robo">
                   {{ getRoboEmoji() }}
                 </div>
@@ -49,7 +41,7 @@
         <div class="editor-area">
           <h3>🧩 Monte sua solução:</h3>
           <div id="blocklyDiv" style="height: 350px; width: 100%;"></div>
-          
+
           <div class="acoes">
             <button @click="executar" class="btn-executar">▶️ Executar</button>
             <button @click="submeter" class="btn-submeter">✅ Enviar Solução</button>
@@ -86,7 +78,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { desafiosService, progressoService } from '../services/api'
 import * as Blockly from 'blockly'
-import { javascriptGenerator } from 'blockly/javascript'  
+import { javascriptGenerator } from 'blockly/javascript'
 import AccessibilityMenu from '../components/AccessibilityMenu.vue'
 import { useAccessibilityStore } from '../stores/accessibility'
 import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
@@ -126,7 +118,7 @@ function inicializarGrid() {
     }
     grid.value.push(linha)
   }
-  
+
   // Definir objetivo baseado no desafio
   if (desafio.value) {
     const objetivos = {
@@ -137,7 +129,7 @@ function inicializarGrid() {
     const [ox, oy] = objetivos[desafio.value.id] || [4, 4]
     grid.value[oy][ox] = 'objetivo'
   }
-  
+
   resetarRobo()
 }
 
@@ -171,9 +163,9 @@ async function carregarDesafio() {
   try {
     const id = route.params.id
     desafio.value = await desafiosService.obterDesafio(id)
-    
+
     inicializarGrid()
-    
+
     setTimeout(() => {
       inicializarBlockly()
     }, 100)
@@ -187,7 +179,7 @@ async function carregarDesafio() {
 function inicializarBlockly() {
   // Registrar blocos customizados
   registrarBlocosCustomizados()
-  
+
   // Toolbox com blocos customizados
   const toolbox = {
     kind: 'categoryToolbox',
@@ -267,25 +259,25 @@ function inicializarBlockly() {
 // Executar código
 async function executar() {
   if (!workspace.value) return
-  
+
   resetarRobo()
   mensagemExecucao.value = 'Executando...'
   resultado.value = null
-  
+
   // Gerar código JavaScript
   const code = javascriptGenerator.workspaceToCode(workspace.value)
-  
+
   if (!code || code.trim() === '') {
     mensagemExecucao.value = '⚠️ Adicione blocos para executar!'
     return
   }
-  
+
   // Criar funções para interpretar
   const comandos = []
-  
+
   // Parsear código gerado
   const linhas = code.split('\n').filter(l => l.trim())
-  
+
   for (const linha of linhas) {
     if (linha.includes('mover()')) {
       comandos.push('mover')
@@ -295,25 +287,25 @@ async function executar() {
       comandos.push('virar_esquerda')
     }
   }
-  
+
   // Se não tiver comandos, interpretar blocos de repetição
   if (comandos.length === 0) {
     const topBlocks = workspace.value.getTopBlocks(true)
-    
+
     for (const block of topBlocks) {
       await interpretarBloco(block, comandos)
     }
   }
-  
+
   if (comandos.length === 0) {
     mensagemExecucao.value = '⚠️ Configure os blocos corretamente!'
     return
   }
-  
+
   // Executar comandos com animação
   for (const comando of comandos) {
     await sleep(500)
-    
+
     if (comando === 'mover') {
       moverRobo()
     } else if (comando === 'virar_direita') {
@@ -322,10 +314,10 @@ async function executar() {
       virarEsquerda()
     }
   }
-  
+
   // Verificar se chegou no objetivo
   const chegouNoObjetivo = grid.value[robotY.value][robotX.value] === 'objetivo'
-  
+
   if (chegouNoObjetivo) {
     mensagemExecucao.value = '🎉 Parabéns! Você completou o desafio! Agora clique em "Enviar Solução".'
   } else {
@@ -336,7 +328,7 @@ async function executar() {
 // Interpretar blocos recursivamente
 async function interpretarBloco(block, comandos) {
   if (!block) return
-  
+
   if (block.type === 'mover_frente') {
     comandos.push('mover')
   } else if (block.type === 'virar_direita') {
@@ -346,16 +338,16 @@ async function interpretarBloco(block, comandos) {
   } else if (block.type === 'controls_repeat_ext') {
     const inputBlock = block.getInputTargetBlock('TIMES')
     const vezes = inputBlock ? parseInt(inputBlock.getFieldValue('NUM') || 1) : 1
-    
+
     const doBlock = block.getInputTargetBlock('DO')
-    
+
     for (let i = 0; i < vezes; i++) {
       if (doBlock) {
         await interpretarBlocoEFilhos(doBlock, comandos)
       }
     }
   }
-  
+
   // Processar próximo bloco
   const nextBlock = block.getNextBlock()
   if (nextBlock) {
@@ -366,9 +358,9 @@ async function interpretarBloco(block, comandos) {
 // Interpretar bloco e seus filhos
 async function interpretarBlocoEFilhos(block, comandos) {
   if (!block) return
-  
+
   await interpretarBloco(block, comandos)
-  
+
   const nextBlock = block.getNextBlock()
   if (nextBlock) {
     await interpretarBlocoEFilhos(nextBlock, comandos)
@@ -415,7 +407,7 @@ async function submeter() {
       desafio.value.id,
       xmlText
     )
-    
+
     resultado.value = resposta
   } catch (error) {
     console.error('Erro ao submeter:', error)
@@ -561,8 +553,15 @@ onUnmounted(() => {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .flag {

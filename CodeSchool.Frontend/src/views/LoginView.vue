@@ -7,18 +7,10 @@
       </div>
 
       <div class="tabs">
-        <button 
-          :class="{ active: !isCadastro }" 
-          @click="isCadastro = false"
-          aria-label="Ir para aba de login"
-        >
+        <button :class="{ active: !isCadastro }" @click="isCadastro = false" aria-label="Ir para aba de login">
           Entrar
         </button>
-        <button 
-          :class="{ active: isCadastro }" 
-          @click="isCadastro = true"
-          aria-label="Ir para aba de cadastro"
-        >
+        <button :class="{ active: isCadastro }" @click="isCadastro = true" aria-label="Ir para aba de cadastro">
           Cadastrar
         </button>
       </div>
@@ -27,26 +19,14 @@
       <form v-if="!isCadastro" @submit.prevent="fazerLogin" class="form">
         <div class="form-group">
           <label for="login-email">Email</label>
-          <input 
-            id="login-email"
-            v-model="loginForm.email" 
-            type="email" 
-            placeholder="seu@email.com"
-            required
-            aria-required="true"
-          />
+          <input id="login-email" v-model="loginForm.email" type="email" placeholder="seu@email.com" required
+            aria-required="true" />
         </div>
 
         <div class="form-group">
           <label for="login-senha">Senha</label>
-          <input 
-            id="login-senha"
-            v-model="loginForm.senha" 
-            type="password" 
-            placeholder="••••••••"
-            required
-            aria-required="true"
-          />
+          <input id="login-senha" v-model="loginForm.senha" type="password" placeholder="••••••••" required
+            aria-required="true" />
         </div>
 
         <button type="submit" class="btn-primary" :disabled="loading">
@@ -58,39 +38,20 @@
       <form v-else @submit.prevent="fazerCadastro" class="form">
         <div class="form-group">
           <label for="cadastro-nome">Nome Completo</label>
-          <input 
-            id="cadastro-nome"
-            v-model="cadastroForm.nome" 
-            type="text" 
-            placeholder="João Silva"
-            required
-            aria-required="true"
-          />
+          <input id="cadastro-nome" v-model="cadastroForm.nome" type="text" placeholder="João Silva" required
+            aria-required="true" />
         </div>
 
         <div class="form-group">
           <label for="cadastro-email">Email</label>
-          <input 
-            id="cadastro-email"
-            v-model="cadastroForm.email" 
-            type="email" 
-            placeholder="seu@email.com"
-            required
-            aria-required="true"
-          />
+          <input id="cadastro-email" v-model="cadastroForm.email" type="email" placeholder="seu@email.com" required
+            aria-required="true" />
         </div>
 
         <div class="form-group">
           <label for="cadastro-senha">Senha</label>
-          <input 
-            id="cadastro-senha"
-            v-model="cadastroForm.senha" 
-            type="password" 
-            placeholder="••••••••"
-            minlength="6"
-            required
-            aria-required="true"
-          />
+          <input id="cadastro-senha" v-model="cadastroForm.senha" type="password" placeholder="••••••••" minlength="6"
+            required aria-required="true" />
         </div>
 
         <div class="form-group">
@@ -147,10 +108,10 @@ async function fazerLogin() {
   try {
     const dados = await authService.login(loginForm.value.email, loginForm.value.senha)
     userStore.setUsuario(dados)
-    
+
     mensagem.value = 'Login realizado com sucesso!'
     mensagemTipo.value = 'sucesso'
-    
+
     setTimeout(() => {
       if (dados.tipo === 'Professor') {
         router.push('/professor')
@@ -173,10 +134,10 @@ async function fazerCadastro() {
   try {
     const dados = await authService.registrar(cadastroForm.value)
     userStore.setUsuario(dados)
-    
+
     mensagem.value = 'Cadastro realizado! Redirecionando...'
     mensagemTipo.value = 'sucesso'
-    
+
     setTimeout(() => {
       if (dados.tipo === 'Professor') {
         router.push('/professor')

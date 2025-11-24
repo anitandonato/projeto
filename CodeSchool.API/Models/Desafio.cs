@@ -16,6 +16,10 @@ namespace CodeSchool.API.Models
         // Objetivo do desafio (ex: "mover 5 casas")
         public string Objetivo { get; set; } = string.Empty;
         
+        // ========== NOVA PROPRIEDADE ==========
+        // Configuração do grid em JSON (posição inicial, objetivo, etc)
+        public string ConfiguracaoGrid { get; set; } = string.Empty;
+        
         // Relacionamentos
         public List<Progresso> Progressos { get; set; } = new();
     }

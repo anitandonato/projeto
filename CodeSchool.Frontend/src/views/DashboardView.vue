@@ -2,7 +2,7 @@
   <div class="dashboard" :key="dashboardKey">
     <AccessibilityMenu />
     <a href="#conteudo-principal" @click.prevent="pularParaConteudo" class="skip-link">Pular para conteúdo principal</a>
-    
+
     <header class="header">
       <div class="logo">🎮 CodeSchool</div>
       <div class="user-info">
@@ -79,12 +79,8 @@
       <section class="desafios">
         <h2>🎮 Desafios Disponíveis</h2>
         <div class="desafios-grid" v-if="desafios.length > 0">
-          <div 
-            v-for="desafio in desafios" 
-            :key="desafio.id" 
-            class="desafio-card"
-            :class="{ concluido: desafio.concluido }"
-          >
+          <div v-for="desafio in desafios" :key="desafio.id" class="desafio-card"
+            :class="{ concluido: desafio.concluido }">
             <div class="desafio-header">
               <h3>{{ desafio.titulo }}</h3>
               <span class="nivel" :class="'nivel-' + desafio.nivel">
@@ -94,11 +90,7 @@
             <p>{{ desafio.descricao }}</p>
             <div class="desafio-footer">
               <span class="pontos">⭐ {{ desafio.pontos }} pontos</span>
-              <button 
-                v-if="!desafio.concluido"
-                @click="irParaDesafio(desafio.id)"
-                class="btn-jogar"
-              >
+              <button v-if="!desafio.concluido" @click="irParaDesafio(desafio.id)" class="btn-jogar">
                 Jogar
               </button>
               <span v-else class="concluido-badge">✅ Concluído</span>
@@ -111,8 +103,9 @@
 
     <div v-else-if="loading" class="loading">Carregando dashboard...</div>
     <div v-else class="loading">
-      Erro ao carregar. 
-      <button @click="carregarDados" style="margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer;">
+      Erro ao carregar.
+      <button @click="carregarDados"
+        style="margin-top: 20px; padding: 10px 20px; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer;">
         Tentar Novamente
       </button>
     </div>
@@ -125,15 +118,8 @@
         <form @submit.prevent="entrarNaTurma">
           <div class="form-group">
             <label for="codigo-turma">Código da Turma</label>
-            <input 
-              id="codigo-turma"
-              v-model="codigoTurma" 
-              type="text" 
-              placeholder="Ex: ABC123"
-              maxlength="6"
-              required
-              style="text-transform: uppercase"
-            />
+            <input id="codigo-turma" v-model="codigoTurma" type="text" placeholder="Ex: ABC123" maxlength="6" required
+              style="text-transform: uppercase" />
           </div>
           <div class="modal-acoes">
             <button type="button" @click="mostrarModalTurma = false" class="btn-cancelar">
@@ -215,12 +201,12 @@ async function entrarNaTurma() {
 
   try {
     const resposta = await turmaService.entrarNaTurma(codigoTurma.value.toUpperCase())
-    
+
     mensagemTurma.value = resposta.mensagem
     mensagemTurmaTipo.value = 'sucesso'
-    
+
     minhasTurmas.value = await turmaService.minhasTurmasAluno()
-    
+
     setTimeout(() => {
       mostrarModalTurma.value = false
       codigoTurma.value = ''
@@ -237,33 +223,33 @@ async function entrarNaTurma() {
 async function carregarDados() {
   console.log('🔄 Iniciando carregamento do dashboard...')
   loading.value = true
-  
+
   try {
     console.log('📡 Fazendo requisições para API...')
-    
+
     const [dashboard, listaDesafios, turmasDoAluno] = await Promise.all([
       progressoService.obterDashboard(),
       desafiosService.listarDesafios(),
       turmaService.minhasTurmasAluno()
     ])
-    
+
     console.log('✅ Dados carregados com sucesso!')
     console.log('Dashboard:', dashboard)
     console.log('Desafios:', listaDesafios)
     console.log('Turmas:', turmasDoAluno)
-    
+
     dashboardData.value = dashboard
     desafios.value = listaDesafios
     minhasTurmas.value = turmasDoAluno
-    
+
     // Forçar re-render
     dashboardKey.value++
-    
+
   } catch (error) {
     console.error('❌ ERRO GERAL ao carregar dados:', error)
     console.error('Status:', error.response?.status)
     console.error('Mensagem:', error.response?.data)
-    
+
     if (error.response?.status === 401) {
       console.log('🔒 Token inválido, fazendo logout...')
       userStore.limparUsuario()
