@@ -50,12 +50,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 1,
                     Titulo = "Primeiros Passos",
-                    Descricao = "Faça o robô andar 3 passos para frente",
+                    Descricao = "Mova o robô 3 passos para frente até alcançar o objetivo. Use apenas o bloco MOVER.",
                     Nivel = 1,
                     Pontos = 10,
                     Ordem = 1,
                     BlocosDisponiveis = "move",
-                    Objetivo = "Mover 3 passos para frente",
+                    Objetivo = "Alcançar a posição [3,0]",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[0,0],\"direcaoInicial\":\"direita\",\"objetivo\":[3,0]}"
                 },
                 // DESAFIO 2
@@ -63,12 +63,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 2,
                     Titulo = "Virando à Direita",
-                    Descricao = "Faça o robô virar à direita e andar 2 passos",
+                    Descricao = "Faça o robô andar 2 passos para frente, virar à direita e andar mais 2 passos até o objetivo.",
                     Nivel = 1,
                     Pontos = 15,
                     Ordem = 2,
                     BlocosDisponiveis = "move,turn",
-                    Objetivo = "Virar à direita e andar 2 passos",
+                    Objetivo = "Alcançar a posição [2,2]",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[0,0],\"direcaoInicial\":\"direita\",\"objetivo\":[2,2]}"
                 },
                 // DESAFIO 3
@@ -76,12 +76,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 3,
                     Titulo = "Repetindo Movimentos",
-                    Descricao = "Use um loop para fazer o robô andar 5 passos",
+                    Descricao = "Use o bloco REPETIR para fazer o robô andar 5 passos sem repetir o bloco MOVER manualmente.",
                     Nivel = 2,
                     Pontos = 25,
                     Ordem = 3,
                     BlocosDisponiveis = "move,repeat",
-                    Objetivo = "Usar loop para andar 5 passos",
+                    Objetivo = "Alcançar a posição [4,0] usando loops",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[0,0],\"direcaoInicial\":\"direita\",\"objetivo\":[4,0]}"
                 },
                 // DESAFIO 4
@@ -89,12 +89,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 4,
                     Titulo = "Quadrado Perfeito",
-                    Descricao = "Faça o robô andar em forma de quadrado voltando ao ponto inicial. Use um loop para repetir: mover e virar à direita",
+                    Descricao = "Faça o robô andar em forma de quadrado (1 passo para cada lado) e voltar à posição inicial. Use LOOPS!",
                     Nivel = 2,
                     Pontos = 20,
                     Ordem = 4,
                     BlocosDisponiveis = "move,turn,repeat",
-                    Objetivo = "Fazer um quadrado completo",
+                    Objetivo = "Voltar para a posição inicial [1,1]",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[1,1],\"direcaoInicial\":\"direita\",\"objetivo\":[1,1]}"
                 },
                 // DESAFIO 5
@@ -102,12 +102,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 5,
                     Titulo = "Corredor em L",
-                    Descricao = "Percorra o corredor em forma de L. Ande para frente, vire à direita e continue",
+                    Descricao = "Navegue pelo corredor em formato de L. Ande 4 passos para frente, vire à direita e ande mais 2 passos para baixo.",
                     Nivel = 2,
                     Pontos = 20,
                     Ordem = 5,
                     BlocosDisponiveis = "move,turn",
-                    Objetivo = "Percorrer caminho em L",
+                    Objetivo = "Alcançar a posição [4,0]",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[0,2],\"direcaoInicial\":\"direita\",\"objetivo\":[4,0]}"
                 },
                 // DESAFIO 6
@@ -115,12 +115,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 6,
                     Titulo = "Escadaria",
-                    Descricao = "Suba a escada fazendo um padrão diagonal. Mova, vire à esquerda, mova, vire à direita e repita",
+                    Descricao = "Suba a escada diagonal fazendo um movimento em zigue-zague. Padrão: mover, virar esquerda, mover, virar direita.",
                     Nivel = 3,
                     Pontos = 30,
                     Ordem = 6,
                     BlocosDisponiveis = "move,turn,repeat",
-                    Objetivo = "Subir escada diagonal",
+                    Objetivo = "Alcançar a posição [4,0]",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[0,4],\"direcaoInicial\":\"direita\",\"objetivo\":[4,0]}"
                 },
                 // DESAFIO 7
@@ -128,12 +128,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 7,
                     Titulo = "Zigue-Zague",
-                    Descricao = "Faça o robô se mover em zigue-zague pelo grid. Use um padrão de movimentos e viradas",
+                    Descricao = "Percorra o grid em zigue-zague da posição [0,0] até [4,4]. Planeje bem seus movimentos e viradas!",
                     Nivel = 3,
                     Pontos = 35,
                     Ordem = 7,
                     BlocosDisponiveis = "move,turn,repeat",
-                    Objetivo = "Fazer padrão zigue-zague",
+                    Objetivo = "Alcançar a posição [4,4]",
                     ConfiguracaoGrid = "{\"linhas\":5,\"colunas\":5,\"posicaoInicial\":[0,0],\"direcaoInicial\":\"direita\",\"objetivo\":[4,4]}"
                 },
                 // DESAFIO 8
@@ -141,12 +141,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 8,
                     Titulo = "Explorador",
-                    Descricao = "Explore o mapa visitando todos os pontos marcados. Planeje sua rota com cuidado!",
+                    Descricao = "Explore o mapa grande (6x6) indo da posição inicial [0,0] até o canto oposto [5,5]. Planeje a rota mais eficiente!",
                     Nivel = 3,
                     Pontos = 40,
                     Ordem = 8,
                     BlocosDisponiveis = "move,turn,repeat",
-                    Objetivo = "Visitar todos os pontos",
+                    Objetivo = "Alcançar a posição [5,5]",
                     ConfiguracaoGrid = "{\"linhas\":6,\"colunas\":6,\"posicaoInicial\":[0,0],\"direcaoInicial\":\"direita\",\"objetivo\":[5,5]}"
                 },
                 // DESAFIO 9
@@ -154,12 +154,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 9,
                     Titulo = "Espiral",
-                    Descricao = "Faça o robô se mover em espiral do centro até a borda. Desafio avançado com loops!",
+                    Descricao = "Crie um movimento em espiral saindo do centro [3,3] até a borda do grid [6,0]. Desafio avançado com loops complexos!",
                     Nivel = 3,
                     Pontos = 45,
                     Ordem = 9,
                     BlocosDisponiveis = "move,turn,repeat",
-                    Objetivo = "Fazer movimento espiral",
+                    Objetivo = "Alcançar a posição [6,0]",
                     ConfiguracaoGrid = "{\"linhas\":7,\"colunas\":7,\"posicaoInicial\":[3,3],\"direcaoInicial\":\"direita\",\"objetivo\":[6,0]}"
                 },
                 // DESAFIO 10
@@ -167,12 +167,12 @@ namespace CodeSchool.API.Data
                 {
                     Id = 10,
                     Titulo = "Desafio Final",
-                    Descricao = "O grande desafio final! Combine tudo que você aprendeu: loops, viradas e sequências complexas para completar o percurso",
+                    Descricao = "O GRANDE DESAFIO FINAL! Percorra o grid 7x7 do canto superior esquerdo [0,6] até o canto inferior direito [6,0]. Use TUDO que aprendeu: loops, viradas estratégicas e sequências complexas!",
                     Nivel = 3,
                     Pontos = 50,
                     Ordem = 10,
                     BlocosDisponiveis = "move,turn,repeat",
-                    Objetivo = "Completar percurso complexo",
+                    Objetivo = "Alcançar a posição [6,0]",
                     ConfiguracaoGrid = "{\"linhas\":7,\"colunas\":7,\"posicaoInicial\":[0,6],\"direcaoInicial\":\"direita\",\"objetivo\":[6,0]}"
                 }
             );

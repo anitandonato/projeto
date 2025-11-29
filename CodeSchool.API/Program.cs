@@ -83,6 +83,9 @@ using (var scope = app.Services.CreateScope())
     // Criar apenas usuários (desafios já vêm do seed)
     CriarUsuariosIniciais(context);
 
+    // Atualizar descrições dos desafios (corrige enunciados)
+    AtualizarDescricoesDesafios(context);
+
     // Popular dados de teste
     await CodeSchool.API.SeedData.PopularDadosTeste(context);
 }
@@ -129,4 +132,71 @@ void CriarUsuariosIniciais(AppDbContext context)
     context.Usuarios.AddRange(usuarios);
     context.SaveChanges();
     Console.WriteLine("✅ Usuários criados com sucesso!");
+}
+
+void AtualizarDescricoesDesafios(AppDbContext context)
+{
+    var desafios = context.Desafios.ToList();
+
+    if (desafios.Count == 0) return;
+
+    // Verificar se já foi atualizado (checando se a descrição do desafio 1 contém "MOVER")
+    if (desafios[0].Descricao.Contains("MOVER"))
+    {
+        Console.WriteLine("✅ Descrições dos desafios já estão atualizadas!");
+        return;
+    }
+
+    Console.WriteLine("🔄 Atualizando descrições dos desafios...");
+
+    // Atualizar cada desafio
+    foreach (var desafio in desafios)
+    {
+        switch (desafio.Id)
+        {
+            case 1:
+                desafio.Descricao = "Mova o robô 3 passos para frente até alcançar o objetivo. Use apenas o bloco MOVER.";
+                desafio.Objetivo = "Alcançar a posição [3,0]";
+                break;
+            case 2:
+                desafio.Descricao = "Faça o robô andar 2 passos para frente, virar à direita e andar mais 2 passos até o objetivo.";
+                desafio.Objetivo = "Alcançar a posição [2,2]";
+                break;
+            case 3:
+                desafio.Descricao = "Use o bloco REPETIR para fazer o robô andar 5 passos sem repetir o bloco MOVER manualmente.";
+                desafio.Objetivo = "Alcançar a posição [4,0] usando loops";
+                break;
+            case 4:
+                desafio.Descricao = "Faça o robô andar em forma de quadrado (1 passo para cada lado) e voltar à posição inicial. Use LOOPS!";
+                desafio.Objetivo = "Voltar para a posição inicial [1,1]";
+                break;
+            case 5:
+                desafio.Descricao = "Navegue pelo corredor em formato de L. Ande 4 passos para frente, vire à direita e ande mais 2 passos para baixo.";
+                desafio.Objetivo = "Alcançar a posição [4,0]";
+                break;
+            case 6:
+                desafio.Descricao = "Suba a escada diagonal fazendo um movimento em zigue-zague. Padrão: mover, virar esquerda, mover, virar direita.";
+                desafio.Objetivo = "Alcançar a posição [4,0]";
+                break;
+            case 7:
+                desafio.Descricao = "Percorra o grid em zigue-zague da posição [0,0] até [4,4]. Planeje bem seus movimentos e viradas!";
+                desafio.Objetivo = "Alcançar a posição [4,4]";
+                break;
+            case 8:
+                desafio.Descricao = "Explore o mapa grande (6x6) indo da posição inicial [0,0] até o canto oposto [5,5]. Planeje a rota mais eficiente!";
+                desafio.Objetivo = "Alcançar a posição [5,5]";
+                break;
+            case 9:
+                desafio.Descricao = "Crie um movimento em espiral saindo do centro [3,3] até a borda do grid [6,0]. Desafio avançado com loops complexos!";
+                desafio.Objetivo = "Alcançar a posição [6,0]";
+                break;
+            case 10:
+                desafio.Descricao = "O GRANDE DESAFIO FINAL! Percorra o grid 7x7 do canto superior esquerdo [0,6] até o canto inferior direito [6,0]. Use TUDO que aprendeu: loops, viradas estratégicas e sequências complexas!";
+                desafio.Objetivo = "Alcançar a posição [6,0]";
+                break;
+        }
+    }
+
+    context.SaveChanges();
+    Console.WriteLine("✅ Descrições dos desafios atualizadas com sucesso!");
 }

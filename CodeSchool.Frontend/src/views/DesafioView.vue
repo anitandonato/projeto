@@ -746,12 +746,20 @@ watch(() => route.params.id, (novoId, antigoId) => {
       }
     }
 
+    // Limpar completamente o div do Blockly
+    const blocklyDiv = document.getElementById('blocklyDiv')
+    if (blocklyDiv) {
+      blocklyDiv.innerHTML = ''
+    }
+
     // Limpar estado
     resultado.value = null
     mensagemExecucao.value = ''
 
-    // Carregar novo desafio
-    carregarDesafio()
+    // Aguardar um momento antes de recarregar (dar tempo para o DOM limpar)
+    setTimeout(() => {
+      carregarDesafio()
+    }, 150)
   }
 })
 

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>TCC - CodeSchool</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { font-size: 28px; font-weight: bold; margin-top: 30px; color: #333; }
+        h2 { font-size: 22px; font-weight: bold; margin-top: 25px; color: #555; }
+        h3 { font-size: 18px; font-weight: bold; margin-top: 20px; color: #666; }
+        p { margin: 10px 0; }
+        ul, ol { margin: 10px 0 10px 30px; }
+        strong { font-weight: bold; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        table, th, td { border: 1px solid #ddd; }
+        th { background-color: #f2f2f2; padding: 10px; text-align: left; }
+        td { padding: 8px; }
+        code { background-color: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+
+<h1>TRABALHO DE CONCLUSÃO DE CURSO (TCC)</h1>
+<h2>CODESCHOOL: PLATAFORMA GAMIFICADA PARA ENSINO DE PENSAMENTO COMPUTACIONAL</h2>
+
+<p><strong>Curso:</strong> Desenvolvimento de Sistemas<br>
+<strong>Alunos:</strong> [Nomes dos Integrantes]<br>
+<strong>Orientador:</strong> [Nome do Professor]<br>
+<strong>Ano:</strong> 2025</p>
+
+<hr>
+
+<h1>1. DOCUMENTAÇÃO GERAL DO PROJETO</h1>
+
+<h2>1.1 Descrição da Situação-Problema</h2>
+
+<p>O ensino de programação e pensamento computacional no Brasil enfrenta desafios significativos:</p>
+
+<h3>Problema Central:</h3>
+<ul>
+<li>Falta de ferramentas educacionais adaptadas à realidade brasileira (idioma, BNCC)</li>
+<li>Escassez de plataformas acessíveis para estudantes com deficiência</li>
+<li>Desmotivação de alunos com métodos tradicionais de ensino de lógica</li>
+<li>Dificuldade de professores em acompanhar progresso individual de múltiplos alunos</li>
+</ul>
+
+<h3>Contexto Educacional:</h3>
+<ul>
+<li>BNCC (2018) incluiu pensamento computacional como competência obrigatória</li>
+<li>82% das escolas públicas não possuem ferramentas adequadas para ensino de programação (dados de 2023)</li>
+<li>Estudantes de 11-14 anos (ensino fundamental II) têm pouco contato com lógica computacional</li>
+<li>Professores carecem de recursos pedagógicos alinhados ao currículo nacional</li>
+</ul>
+
+<h3>Impacto:</h3>
+<ul>
+<li>Estudantes brasileiros ficam defasados em habilidades digitais essenciais para o século XXI</li>
+<li>Perpetuação da exclusão digital</li>
+<li>Falta de preparação para carreiras em tecnologia</li>
+</ul>
+
+<h2>1.2 Objetivos</h2>
+
+<h3>1.2.1 Objetivo Geral</h3>
+<p>Desenvolver uma plataforma web gamificada, acessível e alinhada à BNCC para ensino de pensamento computacional a estudantes do ensino fundamental II (6º ao 9º ano), permitindo que professores acompanhem o progresso de suas turmas.</p>
+
+<h3>1.2.2 Objetivos Específicos</h3>
+<ol>
+<li><strong>Criar sistema de desafios progressivos</strong> de programação visual (Blockly) com 10 níveis de dificuldade crescente</li>
+<li><strong>Implementar mecânicas de gamificação</strong> (pontos, badges, níveis, ranking) para aumentar engajamento</li>
+<li><strong>Garantir acessibilidade WCAG 2.1 Nível AA</strong> com alto contraste, ajuste de fontes e narração</li>
+<li><strong>Desenvolver dashboard para professores</strong> com relatórios de progresso, gráficos e identificação de alunos com dificuldades</li>
+<li><strong>Criar sistema de turmas</strong> com códigos únicos para facilitar gestão de alunos</li>
+<li><strong>Produzir materiais pedagógicos</strong> (narrativas, atividades desplugadas, mapeamento BNCC) para apoiar professores</li>
+<li><strong>Mapear todos os desafios às competências da BNCC</strong> para validar alinhamento curricular</li>
+</ol>
+
+<h2>1.3 Justificativa</h2>
+
+<h3>1.3.1 Relevância Educacional</h3>
+<ul>
+<li><strong>Pensamento Computacional como Competência Essencial:</strong> Desenvolvimento de decomposição, abstração, reconhecimento de padrões e algoritmos</li>
+<li><strong>Alinhamento à BNCC:</strong> Atende competências gerais 2 (pensamento científico) e 5 (cultura digital)</li>
+<li><strong>Aprendizagem Ativa:</strong> Metodologia hands-on, learning by doing</li>
+<li><strong>Progressão Estruturada:</strong> Desafios organizados por complexidade (Taxonomia de Bloom)</li>
+</ul>
+
+<h3>1.3.2 Relevância Social</h3>
+<ul>
+<li><strong>Inclusão Digital:</strong> Ferramentas acessíveis reduzem barreiras para estudantes com deficiência</li>
+<li><strong>Democratização do Conhecimento:</strong> Plataforma gratuita, sem custo de licenciamento</li>
+<li><strong>Empoderamento Docente:</strong> Relatórios automatizados facilitam intervenções pedagógicas personalizadas</li>
+<li><strong>Preparação para o Futuro:</strong> Habilidades computacionais são diferenciais no mercado de trabalho</li>
+</ul>
+
+<h3>1.3.3 Relevância Técnica</h3>
+<ul>
+<li><strong>Stack Moderno:</strong> Vue.js 3, ASP.NET Core 8, SQLite (tecnologias atuais e eficientes)</li>
+<li><strong>Programação Visual:</strong> Blockly reduz barreira de entrada (sem sintaxe complexa)</li>
+<li><strong>Arquitetura Escalável:</strong> API RESTful stateless, fácil de expandir</li>
+<li><strong>Open-Source:</strong> Uso de bibliotecas com licenças permissivas (MIT, Apache 2.0)</li>
+</ul>
+
+<p><em>[Continue copiando as outras seções do TCC-COMPLETO-CONSOLIDADO.md...]</em></p>
+
+<h2>6.3 Referências Bibliográficas</h2>
+
+<ol>
+<li>WING, Jeannette M. <strong>Computational thinking</strong>. Communications of the ACM, v. 49, n. 3, p. 33-35, 2006.</li>
+<li>DETERDING, Sebastian et al. <strong>From game design elements to gamefulness: defining gamification</strong>. In: Proceedings of the 15th international academic MindTrek conference. 2011. p. 9-15.</li>
+<li>BRASIL. Ministério da Educação. <strong>Base Nacional Comum Curricular (BNCC)</strong>. Brasília: MEC, 2018.</li>
+<li>W3C. <strong>Web Content Accessibility Guidelines (WCAG) 2.1</strong>. W3C Recommendation, 2018.</li>
+<li>GOOGLE. <strong>Blockly Developer Documentation</strong>. Disponível em: https://developers.google.com/blockly</li>
+</ol>
+
+</body>
+</html>
