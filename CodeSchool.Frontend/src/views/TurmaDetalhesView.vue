@@ -4,8 +4,9 @@
         <a href="#conteudo-principal" @click.prevent="pularParaConteudo" class="skip-link"> Pular para conteúdo
             principal</a>
         <header class="header">
-            <button @click="voltar" class="btn-voltar">← Voltar</button>
-            <h1 v-if="turma">{{ turma.nome }}</h1>
+        <button @click="voltar" class="btn-voltar">← Voltar</button>
+        <h1>👥 {{ turma?.nome || 'Carregando...'}}</h1>
+        <button @click="verRelatorio" class="btn-relatorio">📊 Ver Relatório</button>
         </header>
 
         <main id="conteudo-principal" class="content" v-if="turma">
@@ -87,6 +88,7 @@ import { turmaService } from '../services/api'
 import AccessibilityMenu from '../components/AccessibilityMenu.vue'
 import { useAccessibilityStore } from '../stores/accessibility'
 import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
+import { useNarracao } from '../composables/useNarracao'
 
 const accessibilityStore = useAccessibilityStore()
 
@@ -94,7 +96,13 @@ const route = useRoute()
 const router = useRouter()
 
 const turma = ref(null)
+
 useKeyboardShortcuts()
+useNarracao()
+
+function verRelatorio() {
+  router.push(`/professor/turma/${route.params.id}/relatorio`)
+}
 function pularParaConteudo() {
     const conteudo = document.getElementById('conteudo-principal')
     if (conteudo) {
@@ -140,6 +148,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.btn-relatorio {
+  padding: 10px 20px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-relatorio:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
 .turma-detalhes {
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -72,5 +72,59 @@ namespace CodeSchool.API.Services
             if (pontos < 500) return 4;
             return 5;
         }
+
+        // Atualizar avatar baseado no nível atual
+        public async Task AtualizarAvatar(int alunoId, int pontos)
+        {
+            var aluno = await _context.Usuarios.FindAsync(alunoId);
+            if (aluno == null) return;
+
+            var nivel = CalcularNivel(pontos);
+
+            // Mapear nível para avatarId (Nível 1 = Avatar 1, Nível 2 = Avatar 2, etc.)
+            int novoAvatarId = nivel;
+
+            // Se o avatar mudou, atualizar
+            if (aluno.AvatarId != novoAvatarId)
+            {
+                aluno.AvatarId = novoAvatarId;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        // Recalcular avatares de TODOS os alunos baseado nos pontos
+        public async Task<int> RecalcularTodosAvatares()
+        {
+            var alunos = await _context.Usuarios
+                .Where(u => u.Tipo == Models.TipoUsuario.Aluno)
+                .ToListAsync();
+
+            int atualizados = 0;
+
+            foreach (var aluno in alunos)
+            {
+                // Calcular pontos totais do aluno
+                var pontosTotal = await _context.Progressos
+                    .Where(p => p.AlunoId == aluno.Id && p.Concluido)
+                    .Include(p => p.Desafio)
+                    .SumAsync(p => p.Desafio.Pontos);
+
+                var nivel = CalcularNivel(pontosTotal);
+                int avatarCorreto = nivel;
+
+                if (aluno.AvatarId != avatarCorreto)
+                {
+                    aluno.AvatarId = avatarCorreto;
+                    atualizados++;
+                }
+            }
+
+            if (atualizados > 0)
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return atualizados;
+        }
     }
 }

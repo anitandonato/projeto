@@ -75,6 +75,8 @@ import { turmaService } from '../services/api'
 import AccessibilityMenu from '../components/AccessibilityMenu.vue'
 import { useAccessibilityStore } from '../stores/accessibility'
 import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
+import { useNarracao } from '../composables/useNarracao'
+
 const accessibilityStore = useAccessibilityStore()
 
 const router = useRouter()
@@ -86,7 +88,9 @@ const nomeTurma = ref('')
 const loading = ref(false)
 const mensagem = ref('')
 const mensagemTipo = ref('')
+
 useKeyboardShortcuts()
+useNarracao()
 function pularParaConteudo() {
     const conteudo = document.getElementById('conteudo-principal')
     if (conteudo) {

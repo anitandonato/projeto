@@ -58,7 +58,7 @@
             <li v-for="badge in resultado.badgesNovas" :key="badge">{{ badge }}</li>
           </ul>
         </div>
-        <button v-if="resultado.sucesso" @click="voltarComReload" class="btn-continuar">
+        <button v-if="resultado.sucesso" @click="irParaProximoDesafio" class="btn-continuar">
           Continuar
         </button>
       </div>
@@ -74,7 +74,7 @@
 
 <script setup>
 import { registrarBlocosCustomizados } from '../services/blocosCustomizados'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { desafiosService, progressoService } from '../services/api'
 import * as Blockly from 'blockly'
@@ -82,11 +82,15 @@ import { javascriptGenerator } from 'blockly/javascript'
 import AccessibilityMenu from '../components/AccessibilityMenu.vue'
 import { useAccessibilityStore } from '../stores/accessibility'
 import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
+import { useNarracao } from '../composables/useNarracao'
 
 const accessibilityStore = useAccessibilityStore()
 
 const route = useRoute()
 const router = useRouter()
+
+// Ativar narração
+useNarracao()
 
 const desafio = ref(null)
 const workspace = ref(null)
@@ -119,12 +123,19 @@ function inicializarGrid() {
     grid.value.push(linha)
   }
 
-  // Definir objetivo baseado no desafio
+  // Definir objetivo baseado no desafio (conforme ConfiguracaoGrid do banco)
   if (desafio.value) {
     const objetivos = {
-      1: [2, 0], // Desafio 1: andar 3 casas (posição [3,0])
-      2: [2, 1], // Desafio 2: virar direita e andar 2
-      3: [4, 0]  // Desafio 3: andar 5 casas
+      1: [3, 0], // Desafio 1: andar 3 passos para frente
+      2: [2, 2], // Desafio 2: virar direita (0,0 → 0,2) e andar 2 passos (0,2 → 2,2)
+      3: [4, 0], // Desafio 3: andar 5 passos com loop
+      4: [1, 1], // Desafio 4: quadrado (volta ao ponto inicial)
+      5: [4, 0], // Desafio 5: corredor em L
+      6: [4, 0], // Desafio 6: escadaria diagonal
+      7: [4, 4], // Desafio 7: zigue-zague
+      8: [4, 4], // Desafio 8: explorador (grid menor 5x5)
+      9: [4, 0], // Desafio 9: espiral (grid menor 5x5)
+      10: [4, 0] // Desafio 10: desafio final (grid menor 5x5)
     }
     const [ox, oy] = objetivos[desafio.value.id] || [4, 4]
     grid.value[oy][ox] = 'objetivo'
@@ -134,9 +145,24 @@ function inicializarGrid() {
 }
 
 function resetarRobo() {
-  robotX.value = 0
-  robotY.value = 0
-  robotDirecao.value = 0
+  // Posição inicial baseada no desafio (conforme ConfiguracaoGrid)
+  const posicoesIniciais = {
+    1: [0, 0], // Desafio 1
+    2: [0, 0], // Desafio 2
+    3: [0, 0], // Desafio 3
+    4: [1, 1], // Desafio 4: quadrado começa no centro
+    5: [0, 2], // Desafio 5: corredor em L
+    6: [0, 4], // Desafio 6: escadaria (começa embaixo)
+    7: [0, 0], // Desafio 7
+    8: [0, 0], // Desafio 8
+    9: [3, 3], // Desafio 9: espiral (começa no centro)
+    10: [0, 4]  // Desafio 10: desafio final (começa embaixo)
+  }
+
+  const [px, py] = posicoesIniciais[desafio.value?.id] || [0, 0]
+  robotX.value = px
+  robotY.value = py
+  robotDirecao.value = 0 // Sempre começa olhando para a direita
 }
 
 function resetarGrid() {
@@ -157,6 +183,19 @@ function voltar() {
 function voltarComReload() {
   router.push('/dashboard')
   window.location.reload()
+}
+
+function irParaProximoDesafio() {
+  const desafioAtualId = parseInt(route.params.id)
+  const proximoDesafioId = desafioAtualId + 1
+
+  // Se tem próximo desafio (até 10), ir para ele
+  if (proximoDesafioId <= 10) {
+    router.push(`/desafio/${proximoDesafioId}`)
+  } else {
+    // Se completou todos, voltar ao dashboard
+    router.push('/dashboard')
+  }
 }
 
 async function carregarDesafio() {
@@ -264,37 +303,20 @@ async function executar() {
   mensagemExecucao.value = 'Executando...'
   resultado.value = null
 
-  // Gerar código JavaScript
-  const code = javascriptGenerator.workspaceToCode(workspace.value)
+  // Criar funções para interpretar
+  const comandos = []
 
-  if (!code || code.trim() === '') {
+  // Interpretar blocos diretamente (não usar JavaScript gerado)
+  const topBlocks = workspace.value.getTopBlocks(true)
+
+  if (topBlocks.length === 0) {
     mensagemExecucao.value = '⚠️ Adicione blocos para executar!'
     return
   }
 
-  // Criar funções para interpretar
-  const comandos = []
-
-  // Parsear código gerado
-  const linhas = code.split('\n').filter(l => l.trim())
-
-  for (const linha of linhas) {
-    if (linha.includes('mover()')) {
-      comandos.push('mover')
-    } else if (linha.includes('virarDireita()')) {
-      comandos.push('virar_direita')
-    } else if (linha.includes('virarEsquerda()')) {
-      comandos.push('virar_esquerda')
-    }
-  }
-
-  // Se não tiver comandos, interpretar blocos de repetição
-  if (comandos.length === 0) {
-    const topBlocks = workspace.value.getTopBlocks(true)
-
-    for (const block of topBlocks) {
-      await interpretarBloco(block, comandos)
-    }
+  // Processar todos os blocos
+  for (const block of topBlocks) {
+    await interpretarBloco(block, comandos)
   }
 
   if (comandos.length === 0) {
@@ -302,12 +324,17 @@ async function executar() {
     return
   }
 
+  // Rastrear o caminho percorrido
+  const caminhoPercorrido = []
+  caminhoPercorrido.push({ x: robotX.value, y: robotY.value })
+
   // Executar comandos com animação
   for (const comando of comandos) {
     await sleep(500)
 
     if (comando === 'mover') {
       moverRobo()
+      caminhoPercorrido.push({ x: robotX.value, y: robotY.value })
     } else if (comando === 'virar_direita') {
       virarDireita()
     } else if (comando === 'virar_esquerda') {
@@ -319,7 +346,14 @@ async function executar() {
   const chegouNoObjetivo = grid.value[robotY.value][robotX.value] === 'objetivo'
 
   if (chegouNoObjetivo) {
-    mensagemExecucao.value = '🎉 Parabéns! Você completou o desafio! Agora clique em "Enviar Solução".'
+    // Validar se a solução está correta
+    const validacao = validarSolucao(desafio.value.id, comandos, caminhoPercorrido)
+
+    if (validacao.valido) {
+      mensagemExecucao.value = '🎉 Parabéns! Você completou o desafio! Agora clique em "Enviar Solução".'
+    } else {
+      mensagemExecucao.value = `⚠️ Você chegou na bandeira, mas ${validacao.mensagem} Tente usar a solução pedida no enunciado.`
+    }
   } else {
     mensagemExecucao.value = '❌ Quase lá! O robô não chegou na bandeira. Tente ajustar sua solução.'
   }
@@ -336,16 +370,41 @@ async function interpretarBloco(block, comandos) {
   } else if (block.type === 'virar_esquerda') {
     comandos.push('virar_esquerda')
   } else if (block.type === 'controls_repeat_ext') {
+    console.log('🔄 Detectado bloco REPEAT')
+
     const inputBlock = block.getInputTargetBlock('TIMES')
+    console.log('Input Block:', inputBlock)
+
     const vezes = inputBlock ? parseInt(inputBlock.getFieldValue('NUM') || 1) : 1
+    console.log('🔢 Vai repetir', vezes, 'vezes')
 
     const doBlock = block.getInputTargetBlock('DO')
+    console.log('DO Block:', doBlock)
 
+    // Repetir os blocos dentro do DO
     for (let i = 0; i < vezes; i++) {
-      if (doBlock) {
-        await interpretarBlocoEFilhos(doBlock, comandos)
+      console.log(`  📍 Iteração ${i + 1}/${vezes}`)
+
+      // Processar todos os blocos dentro do DO
+      let currentBlock = doBlock
+      while (currentBlock) {
+        console.log('    🧩 Processando bloco:', currentBlock.type)
+
+        if (currentBlock.type === 'mover_frente') {
+          comandos.push('mover')
+          console.log('    ✅ Adicionado: mover')
+        } else if (currentBlock.type === 'virar_direita') {
+          comandos.push('virar_direita')
+          console.log('    ✅ Adicionado: virar_direita')
+        } else if (currentBlock.type === 'virar_esquerda') {
+          comandos.push('virar_esquerda')
+          console.log('    ✅ Adicionado: virar_esquerda')
+        }
+        currentBlock = currentBlock.getNextBlock()
       }
     }
+
+    console.log('✅ Fim do REPEAT, total de comandos:', comandos.length)
   }
 
   // Processar próximo bloco
@@ -396,9 +455,204 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+// Validar se a solução está correta
+function validarSolucao(desafioId, comandos, caminhoPercorrido) {
+  // Definir validações para cada desafio
+  const validacoes = {
+    1: {
+      // Desafio 1: "Faça o robô andar 3 passos para frente"
+      minMovimentos: 3,
+      maxComandos: 6,
+      mensagemPoucos: 'você não andou 3 passos. O desafio pede para andar 3 passos para frente.',
+      mensagemMuitos: 'você usou muitos blocos. Tente usar apenas 3 blocos "mover" ou use o bloco "repetir".'
+    },
+    2: {
+      // Desafio 2: "Faça o robô virar à direita e andar 2 passos"
+      // Solução: mover 2x, virar direita, mover 2x = chega em (2,2)
+      minMovimentos: 4,
+      minViradas: 1,
+      maxComandos: 8,
+      mensagemPoucos: 'faltam movimentos. Você precisa andar e virar para chegar na bandeira.',
+      mensagemMuitos: 'você usou muitos blocos. Tente encontrar o caminho mais curto.'
+    },
+    3: {
+      // Desafio 3: "Use um loop para fazer o robô andar 5 passos"
+      minMovimentos: 5,
+      maxComandos: 8,
+      mensagemPoucos: 'você não andou 5 passos. Use o bloco "repetir" para andar 5 passos.',
+      mensagemMuitos: 'você usou muitos blocos. Use o bloco "repetir" para fazer o robô andar 5 vezes.'
+    },
+    4: {
+      // Desafio 4: "Quadrado perfeito" - volta ao ponto inicial
+      minMovimentos: 4,
+      minViradas: 4,
+      maxComandos: 20,
+      mensagemPoucos: 'faltam movimentos ou viradas. Você precisa fazer um quadrado completo.',
+      mensagemMuitos: 'você usou muitos blocos. Use o bloco "repetir" com mover e virar dentro.'
+    },
+    5: {
+      // Desafio 5: "Corredor em L"
+      maxComandos: 15,
+      mensagemMuitos: 'você usou muitos blocos. Tente encontrar um caminho mais direto.'
+    },
+    6: {
+      // Desafio 6: "Escadaria diagonal"
+      maxComandos: 20,
+      mensagemMuitos: 'você usou muitos blocos. Tente usar loops para repetir o padrão.'
+    },
+    7: {
+      // Desafio 7: "Zigue-zague"
+      maxComandos: 25,
+      mensagemMuitos: 'você usou muitos blocos. Tente otimizar usando loops.'
+    },
+    8: {
+      // Desafio 8: "Explorador"
+      maxComandos: 30,
+      mensagemMuitos: 'você usou muitos blocos. Planeje uma rota mais eficiente.'
+    },
+    9: {
+      // Desafio 9: "Espiral"
+      maxComandos: 35,
+      mensagemMuitos: 'você usou muitos blocos. Use loops aninhados para criar a espiral.'
+    },
+    10: {
+      // Desafio 10: "Desafio Final"
+      maxComandos: 40,
+      mensagemMuitos: 'você usou muitos blocos. Combine loops e padrões que você aprendeu.'
+    }
+  }
+
+  const validacao = validacoes[desafioId]
+
+  if (!validacao) {
+    // Se não tiver validação específica, aceita qualquer solução
+    return { valido: true }
+  }
+
+  // Contar movimentos e viradas
+  const movimentos = comandos.filter(c => c === 'mover').length
+  const viradas = comandos.filter(c => c === 'virar_direita' || c === 'virar_esquerda').length
+
+  // Verificar quantidade mínima de movimentos
+  if (validacao.minMovimentos && movimentos < validacao.minMovimentos) {
+    return {
+      valido: false,
+      mensagem: validacao.mensagemPoucos || 'faltam movimentos.'
+    }
+  }
+
+  // Verificar quantidade mínima de viradas
+  if (validacao.minViradas && viradas < validacao.minViradas) {
+    return {
+      valido: false,
+      mensagem: validacao.mensagemPoucos || 'você precisa virar para completar o desafio.'
+    }
+  }
+
+  // Verificar se usou muitos comandos (solução ineficiente)
+  if (validacao.maxComandos && comandos.length > validacao.maxComandos) {
+    return {
+      valido: false,
+      mensagem: validacao.mensagemMuitos || 'você usou muitos blocos. Tente otimizar sua solução.'
+    }
+  }
+
+  return { valido: true }
+}
+
 async function submeter() {
   if (!workspace.value) return
 
+  // Limpar mensagem de execução ao submeter
+  mensagemExecucao.value = ''
+
+  // VALIDAR SOLUÇÃO ANTES DE SUBMETER
+  // Resetar e simular execução para validar
+  const robotXBackup = robotX.value
+  const robotYBackup = robotY.value
+  const robotDirecaoBackup = robotDirecao.value
+
+  resetarRobo()
+
+  // Interpretar blocos para obter comandos
+  const comandos = []
+  const topBlocks = workspace.value.getTopBlocks(true)
+
+  if (topBlocks.length === 0) {
+    resultado.value = {
+      sucesso: false,
+      mensagem: '⚠️ Adicione blocos antes de enviar!'
+    }
+    return
+  }
+
+  // Processar todos os blocos
+  for (const block of topBlocks) {
+    await interpretarBloco(block, comandos)
+  }
+
+  if (comandos.length === 0) {
+    resultado.value = {
+      sucesso: false,
+      mensagem: '⚠️ Configure os blocos corretamente antes de enviar!'
+    }
+    return
+  }
+
+  // Rastrear o caminho percorrido durante simulação
+  const caminhoPercorrido = []
+  caminhoPercorrido.push({ x: robotX.value, y: robotY.value })
+
+  // Simular execução (sem animação)
+  for (const comando of comandos) {
+    if (comando === 'mover') {
+      moverRobo()
+      caminhoPercorrido.push({ x: robotX.value, y: robotY.value })
+    } else if (comando === 'virar_direita') {
+      virarDireita()
+    } else if (comando === 'virar_esquerda') {
+      virarEsquerda()
+    }
+  }
+
+  // Verificar se chegou no objetivo
+  const chegouNoObjetivo = grid.value[robotY.value][robotX.value] === 'objetivo'
+
+  if (!chegouNoObjetivo) {
+    // Restaurar posição do robô
+    robotX.value = robotXBackup
+    robotY.value = robotYBackup
+    robotDirecao.value = robotDirecaoBackup
+
+    resultado.value = {
+      sucesso: false,
+      mensagem: '❌ O robô não chegou na bandeira! Execute primeiro para ver o que acontece.'
+    }
+    return
+  }
+
+  // Validar se a solução está correta
+  const validacao = validarSolucao(desafio.value.id, comandos, caminhoPercorrido)
+
+  if (!validacao.valido) {
+    // Restaurar posição do robô
+    robotX.value = robotXBackup
+    robotY.value = robotYBackup
+    robotDirecao.value = robotDirecaoBackup
+
+    resultado.value = {
+      sucesso: false,
+      mensagem: `⚠️ Solução inválida! ${validacao.mensagem}`
+    }
+    return
+  }
+
+  // Restaurar posição do robô
+  robotX.value = robotXBackup
+  robotY.value = robotYBackup
+  robotDirecao.value = robotDirecaoBackup
+
+  // SOLUÇÃO VÁLIDA - Enviar para o backend
   const xml = Blockly.Xml.workspaceToDom(workspace.value)
   const xmlText = Blockly.Xml.domToText(xml)
 
@@ -422,9 +676,36 @@ onMounted(() => {
   carregarDesafio()
 })
 
+// Observar mudanças na rota para recarregar desafio
+watch(() => route.params.id, (novoId, antigoId) => {
+  if (novoId !== antigoId) {
+    // Limpar workspace antigo antes de carregar novo desafio
+    if (workspace.value) {
+      try {
+        workspace.value.dispose()
+        workspace.value = null
+      } catch (error) {
+        console.log('Erro ao limpar workspace:', error.message)
+      }
+    }
+
+    // Limpar estado
+    resultado.value = null
+    mensagemExecucao.value = ''
+
+    // Carregar novo desafio
+    carregarDesafio()
+  }
+})
+
 onUnmounted(() => {
-  if (workspace.value) {
-    workspace.value.dispose()
+  try {
+    if (workspace.value) {
+      workspace.value.dispose()
+      workspace.value = null
+    }
+  } catch (error) {
+    console.log('Workspace já foi limpo:', error.message)
   }
 })
 </script>

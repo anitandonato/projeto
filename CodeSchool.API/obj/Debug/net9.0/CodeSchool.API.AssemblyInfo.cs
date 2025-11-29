@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CodeSchool.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee75bda65f1fe5136551a4d4fedc0957e8544caa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ec8ecc078c51ad867d6f7439bad760aaeb2a75b")]
 [assembly: System.Reflection.AssemblyProductAttribute("CodeSchool.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CodeSchool.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

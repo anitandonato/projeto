@@ -7,15 +7,28 @@ export function useKeyboardShortcuts() {
 
   function setupKeyboardShortcuts() {
     handleKeyPress = (event) => {
-      // Alt + 1: Pular para conteúdo principal
+      // Alt + 1: Pular para conteúdo principal (voltar ao topo)
       if (event.altKey && event.key === '1') {
         event.preventDefault()
+
+        // Tentar encontrar o conteúdo principal
         const conteudo = document.getElementById('conteudo-principal')
+
         if (conteudo) {
+          // Se encontrou, focar nele
           conteudo.setAttribute('tabindex', '-1')
           conteudo.focus()
-          conteudo.scrollIntoView({ behavior: 'smooth' })
+          conteudo.scrollIntoView({ behavior: 'smooth', block: 'start' })
           accessibilityStore.narrar('Navegando para conteúdo principal')
+        } else {
+          // Se não encontrou (loading), fazer scroll para o topo da página
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+          // Focar no primeiro elemento focável ou no body
+          const primeiroFocavel = document.querySelector('button, a, input, [tabindex]:not([tabindex="-1"])')
+          if (primeiroFocavel) {
+            primeiroFocavel.focus()
+          }
+          accessibilityStore.narrar('Navegando para o topo da página')
         }
       }
 

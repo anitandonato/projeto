@@ -59,8 +59,8 @@
         <div class="stat-card">
           <div class="stat-icon">✅</div>
           <div class="stat-info">
-            <h3>Desafios</h3>
-            <p class="stat-value">{{ dashboardData.desafiosCompletos }}</p>
+            <h3>Desafios Completos</h3>
+            <p class="stat-value">{{ dashboardData.desafiosCompletos }}/10</p>
           </div>
         </div>
       </section>
@@ -78,8 +78,30 @@
 
       <section class="desafios">
         <h2>🎮 Desafios Disponíveis</h2>
-        <div class="desafios-grid" v-if="desafios.length > 0">
-          <div v-for="desafio in desafios" :key="desafio.id" class="desafio-card"
+
+        <div class="filtros-desafios">
+          <button
+            @click="filtroAtivo = 'todos'"
+            :class="{ 'ativo': filtroAtivo === 'todos' }"
+            class="btn-filtro">
+            📚 Todos
+          </button>
+          <button
+            @click="filtroAtivo = 'completos'"
+            :class="{ 'ativo': filtroAtivo === 'completos' }"
+            class="btn-filtro">
+            ✅ Completos
+          </button>
+          <button
+            @click="filtroAtivo = 'pendentes'"
+            :class="{ 'ativo': filtroAtivo === 'pendentes' }"
+            class="btn-filtro">
+            ⏳ Pendentes
+          </button>
+        </div>
+
+        <div class="desafios-grid" v-if="desafiosFiltrados.length > 0">
+          <div v-for="desafio in desafiosFiltrados" :key="desafio.id" class="desafio-card"
             :class="{ concluido: desafio.concluido }">
             <div class="desafio-header">
               <h3>{{ desafio.titulo }}</h3>
@@ -90,10 +112,9 @@
             <p>{{ desafio.descricao }}</p>
             <div class="desafio-footer">
               <span class="pontos">⭐ {{ desafio.pontos }} pontos</span>
-              <button v-if="!desafio.concluido" @click="irParaDesafio(desafio.id)" class="btn-jogar">
-                Jogar
+              <button @click="irParaDesafio(desafio.id)" class="btn-jogar" :class="{ 'completo': desafio.concluido }">
+                {{ desafio.concluido ? '🔁 Jogar Novamente' : '▶️ Jogar' }}
               </button>
-              <span v-else class="concluido-badge">✅ Concluído</span>
             </div>
           </div>
         </div>
@@ -140,16 +161,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import { progressoService, desafiosService, turmaService } from '../services/api'
 import AccessibilityMenu from '../components/AccessibilityMenu.vue'
 import { useAccessibilityStore } from '../stores/accessibility'
 import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
+import { useNarracao } from '../composables/useNarracao'
+
 const dashboardKey = ref(0)
 const accessibilityStore = useAccessibilityStore()
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 
 const dashboardData = ref(null)
@@ -161,10 +185,22 @@ const loadingTurma = ref(false)
 const mensagemTurma = ref('')
 const mensagemTurmaTipo = ref('')
 const loading = ref(true)
+const filtroAtivo = ref('todos')
 
-const avatares = ['🦸', '🧙', '🥷', '🤖', '👾', '🐉', '🦄', '⚡']
+const avatares = ['🦸', '🧙', '👑', '🤖', '👾', '🐉', '🦄', '⚡']
 
 useKeyboardShortcuts()
+useNarracao()
+
+// Filtrar desafios baseado no filtro ativo
+const desafiosFiltrados = computed(() => {
+  if (filtroAtivo.value === 'completos') {
+    return desafios.value.filter(d => d.concluido)
+  } else if (filtroAtivo.value === 'pendentes') {
+    return desafios.value.filter(d => !d.concluido)
+  }
+  return desafios.value // 'todos'
+})
 
 function pularParaConteudo() {
   const conteudo = document.getElementById('conteudo-principal')
@@ -176,7 +212,11 @@ function pularParaConteudo() {
 }
 
 function getAvatar(avatarId) {
-  return avatares[avatarId - 1] || avatares[0]
+  // Garantir que avatarId seja um número válido entre 1 e 8
+  if (!avatarId || avatarId < 1 || avatarId > 8) {
+    return avatares[0] // Retorna o primeiro avatar como padrão
+  }
+  return avatares[avatarId - 1]
 }
 
 function getNivelTexto(nivel) {
@@ -260,6 +300,14 @@ async function carregarDados() {
     loading.value = false
   }
 }
+
+// Detectar quando volta para o dashboard e recarregar dados
+watch(() => route.path, (newPath) => {
+  if (newPath === '/dashboard') {
+    console.log('🔄 Voltou para o dashboard, recarregando dados...')
+    carregarDados()
+  }
+})
 
 onMounted(() => {
   carregarDados()
@@ -460,6 +508,33 @@ onMounted(() => {
 .desafios h2 {
   color: white;
   margin-bottom: 20px;
+}
+
+.filtros-desafios {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.btn-filtro {
+  padding: 10px 20px;
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-filtro:hover {
+  background: #f0f0ff;
+}
+
+.btn-filtro.ativo {
+  background: #667eea;
+  color: white;
 }
 
 .desafios-grid {

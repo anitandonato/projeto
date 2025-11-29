@@ -79,6 +79,15 @@ namespace CodeSchool.API.Controllers
 
             await _context.SaveChangesAsync();
 
+            // Calcular pontos totais para atualizar avatar
+            var pontosTotal = await _context.Progressos
+                .Where(p => p.AlunoId == alunoId && p.Concluido)
+                .Include(p => p.Desafio)
+                .SumAsync(p => p.Desafio.Pontos);
+
+            // Atualizar avatar baseado no novo nível
+            await _gameService.AtualizarAvatar(alunoId, pontosTotal);
+
             // Verificar badges
             var badgesNovas = await _gameService.VerificarBadges(alunoId);
 

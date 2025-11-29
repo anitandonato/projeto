@@ -100,4 +100,21 @@ export const turmaService = {
     return response.data
   }
 }
+// Serviço de Relatórios
+export const relatorioService = {
+  async obterEstatisticasTurma(turmaId) {
+    const response = await api.get(`/Relatorio/turma/${turmaId}`)
+    return response.data
+  },
+
+  async obterProgressoAluno(alunoId) {
+    const response = await api.get(`/Relatorio/aluno/${alunoId}`)
+    return response.data
+  },
+
+  async obterRanking(turmaId) {
+    const response = await api.get(`/Relatorio/ranking/${turmaId}`)
+    return response.data
+  }
+}
 export default api

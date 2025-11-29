@@ -79,9 +79,12 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
-    
+
     // Criar apenas usuários (desafios já vêm do seed)
     CriarUsuariosIniciais(context);
+
+    // Popular dados de teste
+    await CodeSchool.API.SeedData.PopularDadosTeste(context);
 }
 
 // Configurar pipeline HTTP
