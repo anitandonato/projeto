@@ -16,6 +16,9 @@
                 <button @click="mostrarModalCriar = true" class="btn-criar-turma">
                     ➕ Criar Nova Turma
                 </button>
+                <button @click="verRecursos" class="btn-recursos">
+                    📚 Recursos Pedagógicos
+                </button>
             </section>
 
             <section class="turmas">
@@ -106,6 +109,10 @@ function sair() {
 
 function verTurma(id) {
     router.push(`/professor/turma/${id}`)
+}
+
+function verRecursos() {
+    router.push('/professor/recursos')
 }
 
 async function carregarTurmas() {
@@ -216,6 +223,24 @@ onMounted(() => {
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-recursos {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 15px;
+}
+
+.btn-recursos:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
 }
 
 .turmas h2 {

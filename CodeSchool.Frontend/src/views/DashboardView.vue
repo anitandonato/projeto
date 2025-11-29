@@ -29,6 +29,9 @@
         <button @click="mostrarModalTurma = true" class="btn-entrar-turma">
           {{ minhasTurmas.length > 0 ? '➕ Entrar em Outra Turma' : '🎓 Entrar em uma Turma' }}
         </button>
+        <button @click="verNarrativa" class="btn-narrativa">
+          📖 Ver História do Explorador
+        </button>
       </section>
 
       <section class="stats">
@@ -120,6 +123,9 @@
         </div>
         <p v-else class="loading">Carregando desafios...</p>
       </section>
+
+      <!-- RANKING -->
+      <RankingCard :minhasTurmas="minhasTurmas" />
     </main>
 
     <div v-else-if="loading" class="loading">Carregando dashboard...</div>
@@ -166,6 +172,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import { progressoService, desafiosService, turmaService } from '../services/api'
 import AccessibilityMenu from '../components/AccessibilityMenu.vue'
+import RankingCard from '../components/RankingCard.vue'
 import { useAccessibilityStore } from '../stores/accessibility'
 import { useKeyboardShortcuts } from '../composables/useKeyboardShortcuts'
 import { useNarracao } from '../composables/useNarracao'
@@ -231,6 +238,10 @@ function irParaDesafio(id) {
 function sair() {
   userStore.limparUsuario()
   router.push('/')
+}
+
+function verNarrativa() {
+  router.push('/narrativa')
 }
 
 async function entrarNaTurma() {
@@ -431,6 +442,24 @@ onMounted(() => {
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-narrativa {
+  padding: 15px 40px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-left: 15px;
+}
+
+.btn-narrativa:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
 }
 
 .stats {

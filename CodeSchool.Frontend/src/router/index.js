@@ -25,12 +25,22 @@ const router = createRouter({
       component: () => import('../views/DesafioView.vue'),
       meta: { requiresAuth: true, role: 'Aluno' }
     },
+    {
+      path: '/narrativa',
+      name: 'narrativa',
+      component: () => import('../views/NarrativaView.vue'),
+      meta: { requiresAuth: true, role: 'Aluno' }
+    },
     // Rotas do Professor
     {
       path: '/professor',
       name: 'professor-dashboard',
       component: () => import('../views/ProfessorDashboardView.vue'),
       meta: { requiresAuth: true, role: 'Professor' }
+    },
+    {
+      path: '/professor/dashboard',
+      redirect: '/professor'
     },
     {
       path: '/professor/turma/:id',
@@ -43,6 +53,32 @@ const router = createRouter({
       name: 'relatorio-turma',
       component: () => import('../views/RelatorioTurmaView.vue'),
       meta: { requiresAuth: true, role: 'Professor' }
+    },
+    {
+      path: '/professor/recursos',
+      name: 'recursos-pedagogicos',
+      component: () => import('../views/RecursosPedagogicosView.vue'),
+      meta: { requiresAuth: true, role: 'Professor' }
+    },
+    // Rota 404 - Catch all (deve ser a última)
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      redirect: (to) => {
+        // Se tentar acessar rota não encontrada, redirecionar baseado no usuário
+        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
+        const isAuthenticated = !!localStorage.getItem('token')
+
+        if (!isAuthenticated) {
+          return '/'
+        }
+
+        if (usuario.tipo === 'Professor') {
+          return '/professor'
+        } else {
+          return '/dashboard'
+        }
+      }
     }
   ]
 })

@@ -263,6 +263,59 @@ function inicializarBlockly() {
       },
       {
         kind: 'category',
+        name: 'Condicionais',
+        colour: 210,
+        contents: [
+          {
+            kind: 'block',
+            type: 'se'
+          },
+          {
+            kind: 'block',
+            type: 'se_senao'
+          },
+          {
+            kind: 'block',
+            type: 'comparacao'
+          }
+        ]
+      },
+      {
+        kind: 'category',
+        name: 'Sensores',
+        colour: 290,
+        contents: [
+          {
+            kind: 'block',
+            type: 'tem_parede_frente'
+          },
+          {
+            kind: 'block',
+            type: 'esta_no_objetivo'
+          }
+        ]
+      },
+      {
+        kind: 'category',
+        name: 'Variáveis',
+        colour: 330,
+        contents: [
+          {
+            kind: 'block',
+            type: 'definir_variavel'
+          },
+          {
+            kind: 'block',
+            type: 'obter_variavel'
+          },
+          {
+            kind: 'block',
+            type: 'incrementar_variavel'
+          }
+        ]
+      },
+      {
+        kind: 'category',
         name: 'Números',
         colour: 230,
         contents: [
@@ -270,6 +323,10 @@ function inicializarBlockly() {
             kind: 'block',
             type: 'math_number',
             fields: { NUM: 1 }
+          },
+          {
+            kind: 'block',
+            type: 'math_arithmetic'
           }
         ]
       }

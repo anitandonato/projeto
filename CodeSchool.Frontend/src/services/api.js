@@ -117,4 +117,23 @@ export const relatorioService = {
     return response.data
   }
 }
+
+// Serviço de Ranking
+export const rankingService = {
+  async obterRankingTurma(turmaId) {
+    const response = await api.get(`/Ranking/turma/${turmaId}`)
+    return response.data
+  },
+
+  async obterRankingGeral() {
+    const response = await api.get('/Ranking/geral')
+    return response.data
+  },
+
+  async obterMinhaPosicao(turmaId) {
+    const response = await api.get(`/Ranking/minha-posicao/${turmaId}`)
+    return response.data
+  }
+}
+
 export default api
